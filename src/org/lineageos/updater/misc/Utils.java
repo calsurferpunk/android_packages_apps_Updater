@@ -90,6 +90,12 @@ public class Utils {
         update.setFileSize(object.getLong("size"));
         update.setDownloadUrl(object.getString("url"));
         update.setVersion(object.getString("version"));
+        try {
+            update.setSummary(object.getString("summary"));
+        }
+        catch(Exception ex) {
+            update.setSummary(null);
+        }
         return update;
     }
 
@@ -103,8 +109,11 @@ public class Utils {
             Log.d(TAG, update.getName() + " is older than/equal to the current build");
             return false;
         }
-        if (!update.getType().equalsIgnoreCase(SystemProperties.get(Constants.PROP_RELEASE_TYPE))) {
-            Log.d(TAG, update.getName() + " has type " + update.getType());
+        String updateType = update.getType();
+        if (!updateType.equalsIgnoreCase(SystemProperties.get(Constants.PROP_RELEASE_TYPE)) &&
+            !updateType.equalsIgnoreCase("nightly") &&
+            !updateType.equalsIgnoreCase("unofficial")) {
+            Log.d(TAG, update.getName() + " has type " + updateType);
             return false;
         }
         return true;
@@ -158,6 +167,11 @@ public class Utils {
         String serverUrl = SystemProperties.get(Constants.PROP_UPDATER_URI);
         if (serverUrl.trim().isEmpty()) {
             serverUrl = context.getString(R.string.updater_server_url);
+        }
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        if(preferences.getBoolean(Constants.PREF_USE_UNOFFICIAL_SOURCE, true)) {
+            serverUrl = context.getString(R.string.updater_server_unofficial_url);
         }
 
         return serverUrl.replace("{device}", device)

@@ -101,6 +101,7 @@ public class UpdatesListAdapter extends RecyclerView.Adapter<UpdatesListAdapter.
 
         private final TextView mBuildDate;
         private final TextView mBuildVersion;
+        private final TextView mBuildSummary;
         private final TextView mBuildSize;
 
         private final LinearLayout mProgress;
@@ -115,6 +116,7 @@ public class UpdatesListAdapter extends RecyclerView.Adapter<UpdatesListAdapter.
 
             mBuildDate = view.findViewById(R.id.build_date);
             mBuildVersion = view.findViewById(R.id.build_version);
+            mBuildSummary = view.findViewById(R.id.build_summary);
             mBuildSize = view.findViewById(R.id.build_size);
 
             mProgress = view.findViewById(R.id.progress);
@@ -274,9 +276,17 @@ public class UpdatesListAdapter extends RecyclerView.Adapter<UpdatesListAdapter.
                 DateFormat.LONG, update.getTimestamp());
         String buildVersion = mActivity.getString(R.string.list_build_version,
                 update.getVersion());
+        String buildSummary = update.getSummary();
         viewHolder.mBuildDate.setText(buildDate);
         viewHolder.mBuildVersion.setText(buildVersion);
         viewHolder.mBuildVersion.setCompoundDrawables(null, null, null, null);
+        if (buildSummary != null && buildSummary.length() > 0) {
+            viewHolder.mBuildSummary.setText(buildSummary);
+        }
+        else {
+            viewHolder.mBuildSummary.setVisibility(View.GONE);
+        }
+        viewHolder.mBuildSummary.setCompoundDrawables(null, null, null, null);
 
         if (activeLayout) {
             handleActiveStatus(viewHolder, update);

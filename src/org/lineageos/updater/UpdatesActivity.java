@@ -484,6 +484,7 @@ public class UpdatesActivity extends UpdatesListActivity {
         SwitchCompat dataWarning = view.findViewById(R.id.preferences_mobile_data_warning);
         SwitchCompat abPerfMode = view.findViewById(R.id.preferences_ab_perf_mode);
         SwitchCompat updateRecovery = view.findViewById(R.id.preferences_update_recovery);
+        SwitchCompat useUnofficialSource = view.findViewById(R.id.preferences_use_unofficial_source);
 
         if (!Utils.isABDevice()) {
             abPerfMode.setVisibility(View.GONE);
@@ -494,6 +495,7 @@ public class UpdatesActivity extends UpdatesListActivity {
         autoDelete.setChecked(prefs.getBoolean(Constants.PREF_AUTO_DELETE_UPDATES, false));
         dataWarning.setChecked(prefs.getBoolean(Constants.PREF_MOBILE_DATA_WARNING, true));
         abPerfMode.setChecked(prefs.getBoolean(Constants.PREF_AB_PERF_MODE, false));
+        useUnofficialSource.setChecked(prefs.getBoolean(Constants.PREF_USE_UNOFFICIAL_SOURCE, true));
 
         if (getResources().getBoolean(R.bool.config_hideRecoveryUpdate)) {
             // Hide the update feature if explicitly requested.
@@ -533,6 +535,7 @@ public class UpdatesActivity extends UpdatesListActivity {
                             .putBoolean(Constants.PREF_AUTO_DELETE_UPDATES, autoDelete.isChecked())
                             .putBoolean(Constants.PREF_MOBILE_DATA_WARNING, dataWarning.isChecked())
                             .putBoolean(Constants.PREF_AB_PERF_MODE, abPerfMode.isChecked())
+                            .putBoolean(Constants.PREF_USE_UNOFFICIAL_SOURCE, useUnofficialSource.isChecked())
                             .apply();
 
                     if (Utils.isUpdateCheckEnabled(this)) {

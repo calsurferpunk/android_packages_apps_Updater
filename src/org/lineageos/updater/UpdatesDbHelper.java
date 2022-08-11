@@ -41,6 +41,7 @@ public class UpdatesDbHelper extends SQLiteOpenHelper {
         public static final String COLUMN_NAME_TIMESTAMP = "timestamp";
         public static final String COLUMN_NAME_TYPE = "type";
         public static final String COLUMN_NAME_VERSION = "version";
+        public static final String COLUMN_NAME_SUMMARY = "summary";
         public static final String COLUMN_NAME_SIZE = "size";
     }
 
@@ -57,6 +58,9 @@ public class UpdatesDbHelper extends SQLiteOpenHelper {
 
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + UpdateEntry.TABLE_NAME;
+
+    private static final String SQL_ADD_SUMMARY_COLUMN =
+            "ALTER TABLE " + UpdateEntry.TABLE_NAME + " ADD COLUMN " + UpdateEntry.COLUMN_NAME_SUMMARY + " TEXT DEFAULT NULL";
 
     public UpdatesDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -75,6 +79,17 @@ public class UpdatesDbHelper extends SQLiteOpenHelper {
         onUpgrade(db, oldVersion, newVersion);
     }
 
+    public void onOpen(SQLiteDatabase db) {
+        super.onOpen(db);
+
+        try {
+            db.execSQL(SQL_ADD_SUMMARY_COLUMN);
+        }
+        catch(Exception ex) {
+            //column already exists
+        }
+    }
+
     public void addUpdateWithOnConflict(Update update, int conflictAlgorithm) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -89,6 +104,7 @@ public class UpdatesDbHelper extends SQLiteOpenHelper {
         values.put(UpdateEntry.COLUMN_NAME_TIMESTAMP, update.getTimestamp());
         values.put(UpdateEntry.COLUMN_NAME_TYPE, update.getType());
         values.put(UpdateEntry.COLUMN_NAME_VERSION, update.getVersion());
+        values.put(UpdateEntry.COLUMN_NAME_SUMMARY, update.getSummary());
         values.put(UpdateEntry.COLUMN_NAME_SIZE, update.getFileSize());
     }
 
@@ -125,6 +141,7 @@ public class UpdatesDbHelper extends SQLiteOpenHelper {
                 UpdateEntry.COLUMN_NAME_TIMESTAMP,
                 UpdateEntry.COLUMN_NAME_TYPE,
                 UpdateEntry.COLUMN_NAME_VERSION,
+                UpdateEntry.COLUMN_NAME_SUMMARY,
                 UpdateEntry.COLUMN_NAME_STATUS,
                 UpdateEntry.COLUMN_NAME_SIZE,
         };
@@ -146,6 +163,8 @@ public class UpdatesDbHelper extends SQLiteOpenHelper {
                 update.setType(cursor.getString(index));
                 index = cursor.getColumnIndex(UpdateEntry.COLUMN_NAME_VERSION);
                 update.setVersion(cursor.getString(index));
+                index = cursor.getColumnIndex(UpdateEntry.COLUMN_NAME_SUMMARY);
+                update.setSummary(cursor.getString(index));
                 index = cursor.getColumnIndex(UpdateEntry.COLUMN_NAME_STATUS);
                 update.setPersistentStatus(cursor.getInt(index));
                 index = cursor.getColumnIndex(UpdateEntry.COLUMN_NAME_SIZE);
